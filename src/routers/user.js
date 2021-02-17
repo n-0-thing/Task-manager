@@ -3,7 +3,7 @@ const multer = require("multer");
 const User = require("../models/user");
 const router = new express.Router();
 const auth = require("../middleware/auth");
-
+const { sendWelcomeEmail ,sendCancellationEmail} = require("../emails/account");
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
   //   user
@@ -18,6 +18,7 @@ router.post("/users", async (req, res) => {
   try {
     await user.save();
     const token = await user.generateAuthToken();
+    sendWelcomeEmail(user.email,user.name);
     res.status(201).send({ user, token });
   } catch (error) {
     res.status(400).send(error);
@@ -143,8 +144,9 @@ router.delete("/users/me", auth, async (req, res) => {
   try {
     // const user = await User.findOneAndDelete(req.params._id);
     // if (!user) return res.status(404).send();
-    console.log(req.user);
+    // console.log(req.user);
     await req.user.remove();
+    sendCancellationEmail(req.user.email,req.user.name);
     res.send(req.user);
   } catch (e) {
     res.status(400).send(e);
@@ -163,7 +165,7 @@ const upload = multer({
   },
 });
 router.post("/users/me/avatar", auth,upload.single("avatar"), async (req, res) => {
-  console.log(req.file);
+  console.log(req.file.buffer);
   req.user.avatar=req.file.buffer;
   await req.user.save();
   res.send();
