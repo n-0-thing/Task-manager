@@ -18,8 +18,7 @@ next();
 
    catch(error)
    {
-    //  res.status(401).send({"error":"please authenticate"});
-    console.log("error");
+     res.status(401).send({"error":"please authenticate"});
     }
    
 };
