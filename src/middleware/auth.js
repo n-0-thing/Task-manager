@@ -5,7 +5,7 @@ const auth = async(req,res,next)=>{
   //  console.log(req.headers['authorization']); 
    const token=req.header('Authorization').replace('Bearer','');
   //  console.log(token);
-   const decoded=jwt.verify(token,'highly secure');
+   const decoded=jwt.verify(token,process.env.JWT_SECRET);
   //  console.log(decoded);
    const user=await User.findById({_id:decoded._id,'tokens.token':token});
   //  console.log(user);
@@ -18,8 +18,7 @@ next();
 
    catch(error)
    {
-    //  res.status(401).send({"error":"please authenticate"});
-    console.log("error");
+     res.status(401).send({"error":"please authenticate"});
     }
    
 };
